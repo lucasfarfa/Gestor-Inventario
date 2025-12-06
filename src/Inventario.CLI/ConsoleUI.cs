@@ -25,21 +25,32 @@ namespace Gestor_Inventario.src.Inventario.CLI
 
         public decimal PedirDecimal(string mensaje)
         {
-            decimal retorno = 0;
-            decimal convert = 0;
+            decimal retorno = 0.0m;
             do
             {
                 Console.Write(mensaje + " ");
-                if (decimal.TryParse(Console.ReadLine(), out convert) && convert > 0)
-                {
-                    retorno = convert;
-                }
-                else
+                if (!(decimal.TryParse(Console.ReadLine(), out retorno) && retorno > 0.0m))
                 {
                     MostrarError("Error! Ingrese un numero valido y mayor a 0.");
+                    retorno = 0.0m;
                 }
-            } while (retorno <= 0);
+            } while (retorno == 0.0m);
             return retorno;
+        }
+
+        public int PedirEnteroPositivo(string mensaje)
+        {
+            int entero = 0;
+            do
+            {
+                Console.Write(mensaje + " ");
+                if (!(int.TryParse(Console.ReadLine(), out entero) && entero > 0))
+                {
+                    MostrarError("Error! Ingrese un numero valido y mayor a 0.");
+                    entero = 0;
+                }
+            } while (entero == 0);
+            return entero;
         }
 
         public void MostrarTitulo(string titulo)
