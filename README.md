@@ -1,4 +1,4 @@
-# Gestor-Inventario
+# Gestor-Inventario-CLI
 
 App de Gestion de inventario CLI desarrolada con C# para .NET
 
