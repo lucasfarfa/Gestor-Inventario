@@ -8,17 +8,17 @@ namespace Gestor_Inventario.src.Inventario.CLI
 {
     class Producto
     {
-        private int id;
-        private string nombre;
-        private int stock;
-        private decimal precio;
-
+        // JSON Serializer me pide si o si getters y setters publicos
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public decimal Precio { get; set; }
+        public int Stock { get; set; }
         public Producto(int id, string nombre, int stock, decimal precio)
         {
-            this.id = id;
-            this.nombre = nombre;
-            this.stock = stock;
-            this.precio = precio;
+            this.Id = id;
+            this.Nombre = nombre;
+            this.Stock = stock;
+            this.Precio = precio;
         }
 
         public override bool Equals(object? obj)
@@ -27,19 +27,19 @@ namespace Gestor_Inventario.src.Inventario.CLI
             if (obj != null && obj is Producto)
             {
                 Producto otroProducto = (Producto)obj;
-                equals = this.id == otroProducto.id;
+                equals = this.Id == otroProducto.Id;
             }
             return equals;
         }
 
         public override int GetHashCode()
         {
-            return id.GetHashCode();
+            return Id.GetHashCode();
         }
 
         public override string ToString()
         {
-            return $"ID: {id}, Nombre: {nombre}, Stock: {stock}, Precio: {precio}";
+            return $"ID: {Id}, Nombre: {Nombre}, Stock: {Stock}, Precio: {Precio}";
         }
 
     }

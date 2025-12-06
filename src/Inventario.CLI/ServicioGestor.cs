@@ -8,19 +8,21 @@ namespace Gestor_Inventario.src.Inventario.CLI
 { 
     class ServicioGestor
     {
-        private Dictionary<int, Producto> listadoProductos; 
+        private Dictionary<int, Producto> listadoProductos;
+        private Persistencia persistencia;
         public ServicioGestor()
         {
-            listadoProductos = new Dictionary<int, Producto>();
             // al crear servicio gestor, levantar datos de .json si existen
-            // TODO
+            persistencia = new Persistencia();
+            listadoProductos = persistencia.CargarDatos();            
         }
 
         public void AgregarProducto(int id, string nombre, int stock, decimal precio)
         {
             listadoProductos.Add(id, new Producto(id, nombre, stock, precio));
+
             // grabado log de auditoria sincronico
-            // TODO
+            Logger.GrabarLog($"Se agregó producto ID:{id}, Nombre:{nombre}, Stock:{stock}, Precio:{precio}");
         }
 
         public bool ExisteProducto(int id)
@@ -42,7 +44,7 @@ namespace Gestor_Inventario.src.Inventario.CLI
                 int capacidadInicial = listadoProductos.Count * ESTIMADO_POR_PRODUCTO; // optimizacion de memoria para StringBuilder
                 StringBuilder sb = new StringBuilder(capacidadInicial);
 
-                foreach (var producto in listadoProductos.Values)
+                foreach (Producto producto in listadoProductos.Values)
                 {
                     sb.AppendLine(producto.ToString() + "\n");
                 }
@@ -50,6 +52,18 @@ namespace Gestor_Inventario.src.Inventario.CLI
             }
 
             return retorno;
+        }
+
+        public void ModificarStock(int id, int nuevoStock)
+        {
+            Producto producto = listadoProductos[id];
+            producto.Stock = nuevoStock;
+            Logger.GrabarLog($"Se modificó stock del producto ID:{id}, Nuevo Stock:{nuevoStock}");
+        }
+
+        public void GuardaProductos()
+        {
+            persistencia.GuardarDatos(listadoProductos);
         }
     }
 }
