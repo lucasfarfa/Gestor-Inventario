@@ -39,7 +39,7 @@ namespace Gestor_Inventario.src.Inventario.CLI
 
         public override string ToString()
         {
-            return $"ID: {id}, Nombre: {nombre}, Stock: {stock}, Precio: {precio:C}";
+            return $"ID: {id}, Nombre: {nombre}, Stock: {stock}, Precio: {precio}";
         }
 
     }
