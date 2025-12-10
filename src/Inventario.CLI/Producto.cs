@@ -9,9 +9,9 @@ namespace Gestor_Inventario.src.Inventario.CLI
     class Producto
     {
         // JSON Serializer me pide si o si getters y setters publicos
-        public int Id { get; set; }
-        public string Nombre { get; set; }
-        public decimal Precio { get; set; }
+        public int Id { get; }
+        public string Nombre { get; }
+        public decimal Precio { get; }
         public int Stock { get; set; }
         public Producto(int id, string nombre, int stock, decimal precio)
         {

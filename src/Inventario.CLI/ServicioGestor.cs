@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Gestor_Inventario.src.Inventario.CLI
-{ 
+{
     class ServicioGestor
     {
         private Dictionary<int, Producto> listadoProductos;
@@ -14,20 +14,24 @@ namespace Gestor_Inventario.src.Inventario.CLI
         {
             // al crear servicio gestor, levantar datos de .json si existen
             persistencia = new Persistencia();
-            listadoProductos = persistencia.CargarDatos();            
+            listadoProductos = persistencia.CargarDatos();
         }
 
-        public void AgregarProducto(int id, string nombre, int stock, decimal precio)
+        public async Task AgregarProductoAsync(int id, string nombre, int stock, decimal precio)
         {
+            if ( listadoProductos.ContainsKey(id))
+            {
+                throw new ArgumentException($"El producto con ID {id} ya existe.");
+            }
+
+            if (precio < 0)
+            {
+                throw new ArgumentException("El precio no puede ser negativo.");
+            }
+
             listadoProductos.Add(id, new Producto(id, nombre, stock, precio));
 
-            // grabado log de auditoria sincronico
-            Logger.GrabarLog($"Se agregó producto ID:{id}, Nombre:{nombre}, Stock:{stock}, Precio:{precio}");
-        }
-
-        public bool ExisteProducto(int id)
-        {
-            return listadoProductos.ContainsKey(id);
+            await Logger.GrabarLogAsync($"Se agregó producto ID:{id}, Nombre:{nombre}, Stock:{stock}, Precio:{precio}");
         }
 
         public string ListadoProductos()
@@ -36,7 +40,7 @@ namespace Gestor_Inventario.src.Inventario.CLI
 
             if (listadoProductos == null || listadoProductos.Count == 0) // chequeo null primero asi no revienta el compilador
             {
-                retorno = string.Empty;
+                throw new InvalidOperationException("No hay productos cargados.");
             }
             else
             {
@@ -54,16 +58,34 @@ namespace Gestor_Inventario.src.Inventario.CLI
             return retorno;
         }
 
-        public void ModificarStock(int id, int nuevoStock)
+        public async Task ModificarStockAsync(int id, int nuevoStock)
         {
+            if (listadoProductos == null || listadoProductos.Count == 0)
+            {
+                throw new InvalidOperationException("No hay productos cargados.");
+            }
+
+            if (!listadoProductos.ContainsKey(id))
+            {
+                throw new KeyNotFoundException($"El producto con ID {id} no existe.");
+            }
+
             Producto producto = listadoProductos[id];
             producto.Stock = nuevoStock;
-            Logger.GrabarLog($"Se modificó stock del producto ID:{id}, Nuevo Stock:{nuevoStock}");
+            await Logger.GrabarLogAsync($"Se modificó stock del producto ID:{id}, Nuevo Stock:{nuevoStock}");
         }
 
-        public void GuardaProductos()
+        public async Task GuardaProductosAsync()
         {
-            persistencia.GuardarDatos(listadoProductos);
+            try
+            {
+                await persistencia.GuardarDatosAsync(listadoProductos);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException("Error al guardar los productos: " + ex.Message);
+            }
         }
     }
+
 }

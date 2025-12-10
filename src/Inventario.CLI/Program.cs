@@ -8,9 +8,9 @@ namespace Gestor_Inventario.src.Inventario.CLI
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            new AppInventario().Run();
+            await new AppInventario().Run();
         }
     }
 }

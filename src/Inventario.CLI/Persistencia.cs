@@ -16,8 +16,13 @@ namespace Gestor_Inventario.src.Inventario.CLI
         // https://learn.microsoft.com/es-es/dotnet/standard/serialization/system-text-json/how-to
 
         // Serializar
-        public void GuardarDatos(Dictionary<int, Producto> listadoProductos)
+        public async Task GuardarDatosAsync(Dictionary<int, Producto> listadoProductos)
         {
+            if (listadoProductos == null || listadoProductos.Count == 0)
+            {
+                throw new ArgumentException("No se guarda el archivo ya que no hay productos en el sistema.");
+            }
+
             var opciones = new JsonSerializerOptions
             {
                 WriteIndented = true // con esta linea es mas facil leer el json
@@ -25,11 +30,11 @@ namespace Gestor_Inventario.src.Inventario.CLI
             
             string jsonString = JsonSerializer.Serialize(listadoProductos.Values, opciones); // no olvidar el values, sino inserta solo KEYs...
             
-            File.WriteAllText(RUTA_ARCHIVO, jsonString);
+            await File.WriteAllTextAsync(RUTA_ARCHIVO, jsonString);
         }
 
         // Deserializar, levanta el JSON y convierte a diccionario de productos
-        public Dictionary<int, Producto>? CargarDatos()
+        public Dictionary<int, Producto> CargarDatos()
         {
             if (!File.Exists(RUTA_ARCHIVO))
             {
