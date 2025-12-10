@@ -10,6 +10,7 @@ namespace Gestor_Inventario.src.Inventario.CLI
     {
         private ServicioGestor service;
         private ConsoleUI ui;
+
         public AppInventario()
         {
             service = new ServicioGestor();
@@ -18,6 +19,7 @@ namespace Gestor_Inventario.src.Inventario.CLI
 
         public async Task Run()
         {
+            await service.InicializarAsync(); // levanto datos del JSON al iniciar app
             string opcion;
 
             do
@@ -69,7 +71,7 @@ namespace Gestor_Inventario.src.Inventario.CLI
         {
 
             ui.MostrarTitulo("alta de producto");
-            int id = id = ui.PedirEnteroPositivo("Ingrese el ID del producto:");
+            int id = ui.PedirEnteroPositivo("Ingrese el ID del producto:");
             string nombre = ui.PedirStringNoVacio("Ingrese el nombre del producto:");
             int stock = ui.PedirEnteroPositivo("Ingrese el stock del producto:");
             decimal precio = ui.PedirDecimal("Ingrese el precio del producto:");

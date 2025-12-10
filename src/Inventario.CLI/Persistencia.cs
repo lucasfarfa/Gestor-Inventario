@@ -34,14 +34,14 @@ namespace Gestor_Inventario.src.Inventario.CLI
         }
 
         // Deserializar, levanta el JSON y convierte a diccionario de productos
-        public Dictionary<int, Producto> CargarDatos()
+        public async Task<Dictionary<int, Producto>> CargarDatos()
         {
             if (!File.Exists(RUTA_ARCHIVO))
             {
                 return new Dictionary<int, Producto>();
             }
 
-            string jsonString = File.ReadAllText(RUTA_ARCHIVO);
+            string jsonString = await File.ReadAllTextAsync(RUTA_ARCHIVO);
 
             List<Producto>? listaProductos = JsonSerializer.Deserialize<List<Producto>>(jsonString);
 
