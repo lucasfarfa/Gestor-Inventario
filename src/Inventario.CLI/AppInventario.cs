@@ -16,7 +16,7 @@ namespace Gestor_Inventario.src.Inventario.CLI
             ui = new ConsoleUI();
         }
 
-        public void Run()
+        public async Task Run()
         {
             string opcion;
 
@@ -28,11 +28,11 @@ namespace Gestor_Inventario.src.Inventario.CLI
                 switch (opcion)
                 {
                     case "1":
-                        ValidaAltaProducto();
+                        await ValidaAltaProducto();
                         ui.PausarYLimpiar();
                         break;
                     case "2":
-                        ValidaModificarStock();
+                        await ValidaModificarStock();
                         ui.PausarYLimpiar();
                         break;
                     case "3":
@@ -40,7 +40,7 @@ namespace Gestor_Inventario.src.Inventario.CLI
                         ui.PausarYLimpiar();
                         break;
                     case "4":
-                        GuardarPersistencia();
+                        await GuardarPersistencia();
                         ui.MostrarExito("Saliendo del programa...");
                         break;
                     default:
@@ -51,81 +51,80 @@ namespace Gestor_Inventario.src.Inventario.CLI
             } while (opcion != "4");
         }
 
-        private void GuardarPersistencia()
+        private async Task GuardarPersistencia()
         {
-            if (string.IsNullOrEmpty(service.ListadoProductos()))
+            try
             {
-                ui.MostrarError("No se guardan productos porque no se cargó nada.");
-            }
-            else
+                await service.GuardaProductosAsync();
+            } catch (ArgumentException ex)
             {
-                service.GuardaProductos();
-            }
+                ui.MostrarError(ex.Message);
+            } catch (Exception ex)
+            {
+                ui.MostrarError("Error inesperado al guardar productos: " + ex.Message);
+            }   
         }
 
-        private void ValidaAltaProducto()
+        private async Task ValidaAltaProducto()
         {
-            ui.MostrarTitulo("alta de producto");
 
-            int id = 0; ;
-            do
-            {
-                id = ui.PedirEnteroPositivo("Ingrese el ID del producto:");
-                if (service.ExisteProducto(id))
-                {
-                    ui.MostrarError("Error! El ID ya existe. Ingrese un ID diferente.");
-                    id = 0;
-                }
-            } while (id == 0);
-            
+            ui.MostrarTitulo("alta de producto");
+            int id = id = ui.PedirEnteroPositivo("Ingrese el ID del producto:");
             string nombre = ui.PedirStringNoVacio("Ingrese el nombre del producto:");
             int stock = ui.PedirEnteroPositivo("Ingrese el stock del producto:");
             decimal precio = ui.PedirDecimal("Ingrese el precio del producto:");
-
-            service.AgregarProducto(id, nombre, stock, precio);
-            ui.MostrarExito("Producto agregado exitosamente!");
-        }
-        private void ValidaModificarStock()
-        {
-            if (string.IsNullOrEmpty(service.ListadoProductos()))
+                
+            try
             {
-                ui.MostrarError("No hay productos registrados.");
-                ui.PausarYLimpiar();
+                await service.AgregarProductoAsync(id, nombre, stock, precio);
+                // en el try mantengo lo que quiero hacer si todo sale bien
+                ui.MostrarExito("Producto agregado exitosamente!");
             }
-            else
+            catch (ArgumentException ex)
             {
-                ui.MostrarTitulo("Modificar Stock");
+                ui.MostrarError(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                ui.MostrarError("Error inesperado al agregar producto: " + ex.Message);
+            }   
+        }
+        private async Task ValidaModificarStock()
+        {            
+            ui.MostrarTitulo("Modificar Stock");
+            int id = ui.PedirEnteroPositivo("Ingrese el ID del producto:");
+            int nuevoStock = ui.PedirEnteroPositivo("Ingrese el nuevo stock del producto:");
 
-                int id = 0; ;
-                do
-                {
-                    id = ui.PedirEnteroPositivo("Ingrese el ID del producto:");
-                    if (!service.ExisteProducto(id))
-                    {
-                        ui.MostrarError("Error! El producto ingresado no existe.");
-                        id = 0;
-                    }
-                } while (id == 0);
-
-                int nuevoStock = ui.PedirEnteroPositivo("Ingrese el nuevo stock del producto:");
-                service.ModificarStock(id, nuevoStock);
+            try
+            {
+                await service.ModificarStockAsync(id, nuevoStock);
                 ui.MostrarExito("Stock modificado con exito!");
             }
-
+            catch (InvalidOperationException e)
+            {
+                ui.MostrarError(e.Message);
+            }
+            catch (KeyNotFoundException e)
+            {
+                ui.MostrarError(e.Message);
+            }          
         }
         private void ListarProductos()
         {
-            if (string.IsNullOrEmpty(service.ListadoProductos()))
-            {
-                ui.MostrarError("No hay productos registrados.");
-                
-            }
-            else
+            try
             {
                 ui.MostrarTitulo("Listado de Productos");
                 ui.MostrarExito(service.ListadoProductos());
             }
-        }
+            catch (InvalidOperationException ex)
+            {
+                ui.MostrarError(ex.Message);
 
+            }
+            catch (Exception ex)
+            {
+                ui.MostrarError("Error inesperado al listar productos: " + ex.Message);
+            }
+        }
     }
 }

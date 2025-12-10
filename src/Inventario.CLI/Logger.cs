@@ -9,7 +9,7 @@ namespace Gestor_Inventario.src.Inventario.CLI
 {
     static class Logger
     {
-        public static void GrabarLog(string message)
+        public static async Task GrabarLogAsync(string message)
         {
             string logFilePath = "movimientos.log"; // lo grabo en carpeta Bin
             string logEntry = $"{DateTime.Now}: {message}";
@@ -18,7 +18,7 @@ namespace Gestor_Inventario.src.Inventario.CLI
             // Uso "StreamWriter" para escribir archivo, si quiero leer uso StreamReader
             using (StreamWriter sw = new StreamWriter(logFilePath, append, System.Text.Encoding.UTF8))
             {
-                sw.WriteLine(logEntry);
+               await sw.WriteLineAsync(logEntry);
             }
         }
 
