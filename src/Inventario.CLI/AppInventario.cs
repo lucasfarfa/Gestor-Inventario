@@ -71,7 +71,7 @@ namespace Gestor_Inventario.src.Inventario.CLI
         {
 
             ui.MostrarTitulo("alta de producto");
-            int id = id = ui.PedirEnteroPositivo("Ingrese el ID del producto:");
+            int id = ui.PedirEnteroPositivo("Ingrese el ID del producto:");
             string nombre = ui.PedirStringNoVacio("Ingrese el nombre del producto:");
             int stock = ui.PedirEnteroPositivo("Ingrese el stock del producto:");
             decimal precio = ui.PedirDecimal("Ingrese el precio del producto:");
