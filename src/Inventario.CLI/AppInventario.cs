@@ -10,6 +10,7 @@ namespace Gestor_Inventario.src.Inventario.CLI
     {
         private ServicioGestor service;
         private ConsoleUI ui;
+
         public AppInventario()
         {
             service = new ServicioGestor();
@@ -18,6 +19,7 @@ namespace Gestor_Inventario.src.Inventario.CLI
 
         public async Task Run()
         {
+            await service.InicializarAsync(); // levanto datos del JSON al iniciar app
             string opcion;
 
             do

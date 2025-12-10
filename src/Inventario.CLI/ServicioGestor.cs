@@ -14,7 +14,12 @@ namespace Gestor_Inventario.src.Inventario.CLI
         {
             // al crear servicio gestor, levantar datos de .json si existen
             persistencia = new Persistencia();
-            listadoProductos = persistencia.CargarDatos();
+            listadoProductos = new Dictionary<int, Producto>();
+        }
+
+        public async Task InicializarAsync()
+        {
+            listadoProductos = await persistencia.CargarDatos();
         }
 
         public async Task AgregarProductoAsync(int id, string nombre, int stock, decimal precio)
