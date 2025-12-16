@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using Gestor_Inventario.src.Inventario.CLI.Domain;
 
-namespace Gestor_Inventario.src.Inventario.CLI
+namespace Gestor_Inventario.src.Inventario.CLI.Persistence
 {
-    static class Logger
+    class LogTXT : ILogger
     {
-        public static async Task GrabarLogAsync(string message)
+        public async Task GrabarLogAsync(string message)
         {
             string logFilePath = "movimientos.log"; // lo grabo en carpeta Bin
             string logEntry = $"{DateTime.Now}: {message}";

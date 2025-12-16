@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json;
-using System.IO;
+﻿using System.Text.Json;
+using Gestor_Inventario.src.Inventario.CLI.Domain;
 
-namespace Gestor_Inventario.src.Inventario.CLI
+namespace Gestor_Inventario.src.Inventario.CLI.Persistence
 {
-    class Persistencia
+    class RepositorioJSON : IRepositorio
     {
         private const string RUTA_ARCHIVO = "productos.json";
 
         // aca usamos JSON Serializer
         // https://learn.microsoft.com/es-es/dotnet/standard/serialization/system-text-json/how-to
 
-        // Serializar
+        // Serializar, recibe diccionario de productos y lo guarda en JSON
         public async Task GuardarDatosAsync(Dictionary<int, Producto> listadoProductos)
         {
             if (listadoProductos == null || listadoProductos.Count == 0)
@@ -48,8 +43,7 @@ namespace Gestor_Inventario.src.Inventario.CLI
             if (listaProductos == null) return new Dictionary<int, Producto>();
 
             return listaProductos.ToDictionary(p => p.Id, p => p);
+            // hay que convertir porque JSON guarda arrays y yo uso un dictonary
         }
-
-        // hay que convertir porque JSON guarda arrays y yo uso un dictonary
     }
 }
