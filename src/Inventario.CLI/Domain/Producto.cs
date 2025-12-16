@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Gestor_Inventario.src.Inventario.CLI
+﻿namespace Gestor_Inventario.src.Inventario.CLI.Domain
 {
     class Producto
     {
-        // JSON Serializer me pide si o si getters y setters publicos
+        // JSON Serializer me pide si o si getters publicos
         public int Id { get; }
         public string Nombre { get; }
         public decimal Precio { get; }

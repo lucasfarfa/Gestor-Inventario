@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Gestor_Inventario.src.Inventario.CLI.Domain;
 
-namespace Gestor_Inventario.src.Inventario.CLI
+namespace Gestor_Inventario.src.Inventario.CLI.Presentation
 {
     class AppInventario
     {
-        private ServicioGestor service;
-        private ConsoleUI ui;
 
+        private readonly ServicioGestor service;
+        private readonly ConsoleUI ui;
+                
         public AppInventario()
         {
-            service = new ServicioGestor();
+            /* modificar aca si se cambia el repositorio ejemplo a SQL, despues no hace falta tocar nada mas */
+            IRepositorio repo = new Persistence.RepositorioJSON();
+            ILogger logger = new Persistence.LogTXT();
+
+            service = new ServicioGestor(repo, logger);
             ui = new ConsoleUI();
-        }
+        } 
 
         public async Task Run()
         {

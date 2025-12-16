@@ -1,30 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
-namespace Gestor_Inventario.src.Inventario.CLI
+namespace Gestor_Inventario.src.Inventario.CLI.Domain
 {
     class ServicioGestor
     {
-        private Dictionary<int, Producto> listadoProductos;
-        private Persistencia persistencia;
-        public ServicioGestor()
+        private Dictionary<int, Producto> _listadoProductos;
+        private readonly IRepositorio _repo;
+        private readonly ILogger _logger;
+        public ServicioGestor(IRepositorio repo, ILogger logger)
         {
-            // al crear servicio gestor, levantar datos de .json si existen
-            persistencia = new Persistencia();
-            listadoProductos = new Dictionary<int, Producto>();
+            _repo = repo;
+            _logger = logger;
+            _listadoProductos = new Dictionary<int, Producto>();
         }
 
         public async Task InicializarAsync()
         {
-            listadoProductos = await persistencia.CargarDatos();
+            _listadoProductos = await _repo.CargarDatos();
         }
 
         public async Task AgregarProductoAsync(int id, string nombre, int stock, decimal precio)
         {
-            if ( listadoProductos.ContainsKey(id))
+            if (_listadoProductos.ContainsKey(id))
             {
                 throw new ArgumentException($"El producto con ID {id} ya existe.");
             }
@@ -34,26 +31,26 @@ namespace Gestor_Inventario.src.Inventario.CLI
                 throw new ArgumentException("El precio no puede ser negativo.");
             }
 
-            listadoProductos.Add(id, new Producto(id, nombre, stock, precio));
+            _listadoProductos.Add(id, new Producto(id, nombre, stock, precio));
 
-            await Logger.GrabarLogAsync($"Se agregó producto ID:{id}, Nombre:{nombre}, Stock:{stock}, Precio:{precio}");
+            await _logger.GrabarLogAsync($"Se agregó producto ID:{id}, Nombre:{nombre}, Stock:{stock}, Precio:{precio}");
         }
 
         public string ListadoProductos()
         {
             string retorno;
 
-            if (listadoProductos == null || listadoProductos.Count == 0) // chequeo null primero asi no revienta el compilador
+            if (_listadoProductos == null || _listadoProductos.Count == 0) // chequeo null primero asi no revienta el compilador
             {
                 throw new InvalidOperationException("No hay productos cargados.");
             }
             else
             {
                 const int ESTIMADO_POR_PRODUCTO = 100;
-                int capacidadInicial = listadoProductos.Count * ESTIMADO_POR_PRODUCTO; // optimizacion de memoria para StringBuilder
+                int capacidadInicial = _listadoProductos.Count * ESTIMADO_POR_PRODUCTO; // optimizacion de memoria para StringBuilder
                 StringBuilder sb = new StringBuilder(capacidadInicial);
 
-                foreach (Producto producto in listadoProductos.Values)
+                foreach (Producto producto in _listadoProductos.Values)
                 {
                     sb.AppendLine(producto.ToString() + "\n");
                 }
@@ -65,26 +62,25 @@ namespace Gestor_Inventario.src.Inventario.CLI
 
         public async Task ModificarStockAsync(int id, int nuevoStock)
         {
-            if (listadoProductos == null || listadoProductos.Count == 0)
+            if (_listadoProductos == null || _listadoProductos.Count == 0)
             {
                 throw new InvalidOperationException("No hay productos cargados.");
             }
 
-            if (!listadoProductos.ContainsKey(id))
+            if (!_listadoProductos.ContainsKey(id))
             {
                 throw new KeyNotFoundException($"El producto con ID {id} no existe.");
             }
 
-            Producto producto = listadoProductos[id];
-            producto.Stock = nuevoStock;
-            await Logger.GrabarLogAsync($"Se modificó stock del producto ID:{id}, Nuevo Stock:{nuevoStock}");
+            _listadoProductos[id].Stock = nuevoStock ;
+            await _logger.GrabarLogAsync($"Se modificó stock del producto ID:{id}, Nuevo Stock:{nuevoStock}");
         }
 
         public async Task GuardaProductosAsync()
         {
             try
             {
-                await persistencia.GuardarDatosAsync(listadoProductos);
+                await _repo.GuardarDatosAsync(_listadoProductos);
             }
             catch (ArgumentException ex)
             {
